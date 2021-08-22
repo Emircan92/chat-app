@@ -13,6 +13,15 @@ const io = socketio(server);
 const port = process.env.PORT || 3000;
 const publicDirectoryPath = path.join(__dirname, '../public');
 
+if(process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+      if (req.header('x-forwarded-proto') !== 'https')
+        res.redirect(`https://${req.header('host')}${req.url}`)
+      else
+        next()
+    })
+}
+
 app.use(express.static(publicDirectoryPath))
 
 io.on('connection', (socket) => {
